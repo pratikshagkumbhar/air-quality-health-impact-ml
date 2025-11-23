@@ -2,20 +2,26 @@ import streamlit as st
 import pickle
 import numpy as np
 
-# Load saved model
+# Load model and scaler
 model = pickle.load(open("model.pkl", "rb"))
+scaler = pickle.load(open("scaler.pkl", "rb"))
 
-st.title("Air Quality Health Impact Prediction")
-st.write("This app predicts HealthImpactClass (0–4) based on air quality measurements.")
+st.title("Air Quality Health Impact Classifier")
 
-# Input fields
-pm25 = st.number_input("PM2.5")
-pm10 = st.number_input("PM10")
-no2 = st.number_input("NO2")
-so2 = st.number_input("SO2")
-co = st.number_input("CO")
+PM25 = st.number_input("PM2.5", 0.0)
+PM10 = st.number_input("PM10", 0.0)
+NO2 = st.number_input("NO2", 0.0)
+SO2 = st.number_input("SO2", 0.0)
+CO = st.number_input("CO", 0.0)
+O3 = st.number_input("O3", 0.0)
 
 if st.button("Predict"):
-    X = np.array([[pm25, pm10, no2, so2, co]])
-    pred = model.predict(X)[0]
+    # Same order as training
+    X = np.array([[PM25, PM10, NO2, SO2, CO, O3]])
+
+    # Scale the input
+    X_scaled = scaler.transform(X)
+
+    pred = model.predict(X_scaled)[0]
+
     st.success(f"Predicted Health Impact Class: {pred}")
